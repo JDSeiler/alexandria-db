@@ -3,6 +3,13 @@ use warp::Filter;
 use crate::routes::read as read;
 use crate::routes::create as create;
 
+/*
+Notes:
+This is the function that will progressively combine all of the routes
+defined in sub-modules and turn it into one gigantic mega-route for use
+in the main method.
+*/
+
 pub fn generate_master_route() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     /* CREATE routes */
     let new_book = create::book::new_book();

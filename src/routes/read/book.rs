@@ -2,7 +2,13 @@ use warp::Filter;
 
 const READ_ROOT: &str = "read";
 const BOOK_ROOT: &str = "book";
+/*
+Notes:
+impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
+seems to be the catch-all return type for Filters. It's all over the warp
+docs and the source code.
 
+*/
 pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::path(READ_ROOT)
 	.and(warp::path(BOOK_ROOT))
