@@ -1,10 +1,10 @@
 //use warp::{Filter};
-use routes::{create, read, update, delete};
-    
+use routes::*;
+
 mod routes;
 
 #[tokio::main]
 async fn main() {
-    let value = read::book::test();
-    read::book::other_function();
+    let master_route = routes::master_route::generate_master_route();
 }
+
