@@ -13,8 +13,9 @@ in the main method.
 pub fn generate_master_route() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     /* CREATE routes */
     let new_book = create::book::new_book();
+    let new_reading = create::reading::new_reading();
 
-    let create_routes = new_book;
+    let create_routes = new_book.or(new_reading);
 
     
     /* READ (get) routes */
