@@ -1,10 +1,10 @@
 use warp::Filter;
 
-const GET_ROOT: &str = "get";
+const READ_ROOT: &str = "get";
 const READINGS_ROOT: &str = "reading";
 
 pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    warp::path(GET_ROOT)
+    warp::path(READ_ROOT)
 	.and(warp::path(READINGS_ROOT))
 	.and(warp::path("all"))
 	.map(|| {
@@ -13,7 +13,7 @@ pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
 }
 
 pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    warp::path(GET_ROOT)
+    warp::path(READ_ROOT)
 	.and(warp::path(READINGS_ROOT))
 	.and(warp::path("id"))
 	.and(warp::path::param())
@@ -23,7 +23,7 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
 }
 
 pub fn by_title() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    warp::path(GET_ROOT)
+    warp::path(READ_ROOT)
 	.and(warp::path(READINGS_ROOT))
 	.and(warp::path("title"))
 	.and(warp::path::param())
@@ -33,7 +33,7 @@ pub fn by_title() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejec
 }
 
 pub fn by_author() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    warp::path(GET_ROOT)
+    warp::path(READ_ROOT)
 	.and(warp::path(READINGS_ROOT))
 	.and(warp::path("author"))
 	.and(warp::path::param())

@@ -1,5 +1,5 @@
 pub mod create;
-pub mod read;
+pub mod get;
 pub mod update;
 pub mod delete;
 
