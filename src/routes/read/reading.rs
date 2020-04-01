@@ -1,6 +1,6 @@
 use warp::Filter;
 
-const READ_ROOT: &str = "read";
+const READ_ROOT: &str = "get";
 const READINGS_ROOT: &str = "reading";
 
 pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
