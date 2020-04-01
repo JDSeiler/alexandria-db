@@ -9,6 +9,16 @@ seems to be the catch-all return type for Filters. It's all over the warp
 docs and the source code.
 
 */
+
+pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::path(READ_ROOT)
+	.and(warp::path(BOOK_ROOT))
+	.and(warp::path("all"))
+	.map(|| {
+	    format!("Tried to get all books!")
+	})
+}
+
 pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::path(READ_ROOT)
 	.and(warp::path(BOOK_ROOT))
