@@ -1,5 +1,6 @@
 use warp::{Filter};
 use routes::*;
+use reqwest;
 
 mod routes;
 
@@ -16,5 +17,22 @@ async fn main() {
     let master_route = routes::master_route::generate_master_route();
 
     warp::serve(master_route).run(([127,0,0,1], 8080)).await;
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn tests_active() {
+	assert_eq!(2+2, 4);
+    }
+
+    #[test]
+    #[tokio::main]
+    fn test_driver() {
+	let master_route = routes::master_route::generate_master_route();
+	
+	warp::serve(master_route).run(([127,0,0,1], 8080)).await;
+    }
 }
 
