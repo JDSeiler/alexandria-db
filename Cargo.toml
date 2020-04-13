@@ -10,5 +10,3 @@ edition = "2018"
 # Runtime required for most HTTP crates
 tokio = { version = "0.2", features = ["macros"] }
 warp = "0.2"
-# Used for testing
-reqwest = { version = "0.10", features = ["json"] }

@@ -1,5 +1,4 @@
 use warp::{Filter};
-use routes::*;
 
 mod routes;
 
@@ -9,3 +8,4 @@ async fn main() {
 
     warp::serve(master_route).run(([127,0,0,1], 8080)).await;
 }
+
