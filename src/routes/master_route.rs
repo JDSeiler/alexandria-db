@@ -14,7 +14,8 @@ fn generate_create_routes(
     new_book.or(new_reading)
 }
 
-fn generate_get_routes() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
+fn generate_get_routes(
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
 {
     /* READ (get) routes */
     // For book objects
@@ -68,7 +69,7 @@ fn generate_delete_routes(
     let book_routes = book_by_id;
 
     // For reading objects
-    let reading_by_id = delete::book::by_id();
+    let reading_by_id = delete::reading::by_id();
     let reading_routes = reading_by_id;
 
     // The variables book_routes and reading_routes will become useful
