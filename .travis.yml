@@ -11,7 +11,7 @@ cache:
   cargo: true
 
 before_script:
- - "cargo run"
+ - "cargo run &"
  - sleep 3s
 
 install:
