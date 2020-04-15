@@ -5,7 +5,7 @@ cache:
   cargo: true
 
 before_install:
-  - sudo apt-get install node
+  - sudo pkg install node
   - ./scripts/install-tests.sh
 
 script:
