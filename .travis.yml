@@ -3,3 +3,10 @@ rust:
   - stable
 cache:
   cargo: true
+
+before_install:
+  - sudo apt-get install node
+  - ./scripts/install-tests.sh
+
+script:
+  - ./scripts/run-tests.sh
