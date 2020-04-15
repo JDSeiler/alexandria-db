@@ -11,8 +11,9 @@ cache:
   cargo: true
 
 before_script:
- - "cargo run &"
- - sleep 1m
+ - cargo build
+ - "cargo run"
+ - sleep 3s
 
 install:
   - git submodule add https://github.com/JDSeiler/alexandria-tests
