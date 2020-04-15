@@ -11,7 +11,11 @@ cache:
   cargo: true
 
 before_install:
-  - ./scripts/install-tests.sh
+  - sudo ./scripts/install-tests.sh
+
+before_script:
+ - "cargo run"
+ - sleep 10
 
 script:
   - ./scripts/run-tests.sh
