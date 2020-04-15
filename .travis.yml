@@ -12,10 +12,10 @@ cache:
 
 before_script:
  - "cargo run"
- - sleep 10
+ - sleep 3s
 
 install:
   - git submodule add https://github.com/JDSeiler/alexandria-tests
 
 script:
-  - pushd alexandria-tests && npm test
+  - pushd /home/travis/build/JDSeiler/alexandria-db/alexandria-tests && npm test
