@@ -18,4 +18,6 @@ install:
   - git submodule add https://github.com/JDSeiler/alexandria-tests
 
 script:
-  - pushd /home/travis/build/JDSeiler/alexandria-db/alexandria-tests && npm test
+  - pushd /home/travis/build/JDSeiler/alexandria-db/alexandria-tests 
+  - npm install
+  - npm test
