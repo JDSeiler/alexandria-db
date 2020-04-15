@@ -10,12 +10,12 @@ rust:
 cache:
   cargo: true
 
-before_install:
-  - sudo ./scripts/install-tests.sh
-
 before_script:
  - "cargo run"
  - sleep 10
 
+install:
+  - git submodule add https://github.com/JDSeiler/alexandria-tests
+
 script:
-  - ./scripts/run-tests.sh
+  - pushd alexandria-tests && npm test
