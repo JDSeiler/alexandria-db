@@ -1,5 +1,5 @@
 use warp::Filter;
-use crate::db;
+use crate::db::book_api;
 
 const BOOK_ROOT: &str = "book";
 
@@ -20,7 +20,9 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
     warp::path(BOOK_ROOT)
         .and(warp::path("id"))
         .and(warp::path::param())
-        .map(|id: u32| format!("Tried to get book with id: {}", id))
+        .map(|id: u32| {
+	    book_api::book_by_id_response(id)
+	})
 }
 
 pub fn by_title() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
