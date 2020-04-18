@@ -1,6 +1,7 @@
 use warp::{Filter};
 
 mod routes;
+mod db;
 
 #[tokio::main]
 async fn main() {
