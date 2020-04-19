@@ -20,6 +20,7 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
     warp::path(BOOK_ROOT)
         .and(warp::path("id"))
         .and(warp::path::param())
+	.and(warp::get())
         .map(|id: u32| {
 	    book_api::book_by_id_response(id)
 	})
