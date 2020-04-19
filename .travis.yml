@@ -20,6 +20,7 @@ install:
   - git submodule add https://github.com/JDSeiler/alexandria-tests
 
 script:
+  - "sudo chmod -R a+rw /home/travis/build/JDSeiler/alexandria-db/src/db_storage"
   - pushd /home/travis/build/JDSeiler/alexandria-db/alexandria-tests 
   - npm install
   - npm test
