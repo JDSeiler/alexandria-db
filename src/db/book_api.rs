@@ -22,6 +22,7 @@ pub fn book_by_id_response(id: u32) -> Response<String> {
 
     if maybe_book.is_err() {
 	let error_message = maybe_book.unwrap_err().to_string();
+	println!("{}", error_message);
 	let response = res_builder.status(StatusCode::NOT_FOUND)
 	    .body(String::from(error_message)).unwrap();
 	return response;
@@ -39,7 +40,7 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
 	let error = maybe_conn.unwrap_err();
 	return Err(error);
     } else {
-	let conn = maybe_conn.expect("Connection failed!");
+	let conn = maybe_conn.unwrap();
 	let mut stmt = conn.prepare("SELECT * FROM book WHERE id = :id;").unwrap();
 
 	let row = stmt.query_row_named(&[(":id", &id)], |row| {
