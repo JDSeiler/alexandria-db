@@ -16,7 +16,7 @@ before_script:
  - sleep 3s
 
 install:
-  - sudo apt-install sqlite3
+  - sudo apt-get install sqlite3
   - git submodule add https://github.com/JDSeiler/alexandria-tests
 
 script:
