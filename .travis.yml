@@ -12,7 +12,7 @@ cache:
 
 before_script:
  - cargo build
- - "cargo run &"
+ - "sudo cargo run &"
  - sleep 3s
 
 install:
