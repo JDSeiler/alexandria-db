@@ -11,7 +11,7 @@ struct Reading {
     book: u32,
     start_date: String,
     end_date: String,
-    notes: String
+    notes: Option<String>
 }
 
 pub fn reading_by_id_response(id: u32) -> Response<String> {
