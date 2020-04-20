@@ -1,4 +1,5 @@
 use warp::Filter;
+use crate::db_api::reading_api;
 
 const READINGS_ROOT: &str = "reading";
 
@@ -12,7 +13,10 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
     warp::path(READINGS_ROOT)
         .and(warp::path("id"))
         .and(warp::path::param())
-        .map(|id: u32| format!("Tried to get reading with id: {}", id))
+	.and(warp::get())
+        .map(|id: u32| {
+	   reading_api::reading_by_id_response(id) 
+	})
 }
 
 pub fn by_title() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
