@@ -7,6 +7,7 @@ use super::common;
 #[derive(Serialize, Deserialize)]
 #[derive(Debug)]
 struct Book {
+    id: u32,
     title: String,
     author: String,
     pages: u32,
@@ -45,6 +46,7 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
 
 	let row = stmt.query_row_named(&[(":id", &id)], |row| {
 	    Ok(Book{
+		id: row.get(0)?,
 		title: row.get(1)?,
 		author: row.get(2)?,
 		pages: row.get(3)?,
@@ -54,7 +56,6 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
 		notes: row.get(7)?
 	    })
 	})?;
-
 	Ok(row)
     }
 }
