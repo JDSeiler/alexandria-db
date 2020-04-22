@@ -23,14 +23,14 @@ pub fn book_by_id_response(id: u32) -> Response<String> {
     if maybe_book.is_err() {
         let error = maybe_book.unwrap_err();
         match error {
-	    rusqlite::Error::QueryReturnedNoRows => res_builder
-		.status(StatusCode::NOT_FOUND)
-		.body(String::from("No book was found with that id"))
-		.unwrap(),
-	    _ => res_builder
-		.status(StatusCode::INTERNAL_SERVER_ERROR)
-		.body(error.to_string())
-		.unwrap()
+            rusqlite::Error::QueryReturnedNoRows => res_builder
+                .status(StatusCode::NOT_FOUND)
+                .body(String::from("No book was found with that id"))
+                .unwrap(),
+            _ => res_builder
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .body(error.to_string())
+                .unwrap(),
         }
     } else {
         let book = maybe_book.unwrap();
@@ -48,10 +48,10 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
     } else {
         let conn = maybe_conn.unwrap();
         let stmt = conn.prepare("SELECT * FROM book WHERE id = :id;");
-	let mut checked_query = match stmt {
-	    Ok(good_query) => good_query,
-	    Err(error) => return Err(error)
-	};
+        let mut checked_query = match stmt {
+            Ok(good_query) => good_query,
+            Err(error) => return Err(error),
+        };
         let row = checked_query.query_row_named(&[(":id", &id)], |row| {
             Ok(Book {
                 id: row.get(0)?,
@@ -65,5 +65,49 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
             })
         })?;
         Ok(row)
+    }
+}
+
+pub fn delete_book_response(id: u32) -> Response<String> {
+    let res_builder = Response::builder();
+    let delete_result = delete_book_by_id(id);
+
+    match delete_result {
+        Ok(changed_rows) => {
+	    let message: String;
+	    if changed_rows == 0 {
+		message = String::from("No book found with that id, no rows changed");
+	    } else if changed_rows == 1 {
+		message = String::from("A single book has been deleted");
+	    } else {
+		message = format!("{} rows were changed!! Something may have gone wrong!", changed_rows);
+	    }
+	    res_builder
+		.status(StatusCode::NO_CONTENT)
+		.body(message)
+		.unwrap()
+	},
+        Err(error) => res_builder
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .body(error.to_string())
+            .unwrap(),
+    }
+}
+
+fn delete_book_by_id(id: u32) -> Result<usize, rusqlite::Error> {
+    let maybe_conn = common::get_database_connection();
+    if maybe_conn.is_err() {
+        let error = maybe_conn.unwrap_err();
+        return Err(error);
+    } else {
+        let conn = maybe_conn.unwrap();
+        let stmt = conn.prepare("DELETE FROM book WHERE id = :id;");
+        let mut checked_query = match stmt {
+            Ok(good_query) => good_query,
+            Err(error) => return Err(error),
+        };
+        // execute_named returns either Ok(usize) or Err(rusqlite::Error)
+        // which is exactly what I want, so it can be returned as is.
+        checked_query.execute_named(&[(":id", &id)])
     }
 }
