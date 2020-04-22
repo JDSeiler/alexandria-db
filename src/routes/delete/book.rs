@@ -1,7 +1,6 @@
 use warp::Filter;
 use crate::db_api::book_api;
 
-
 const BOOK_ROOT: &str = "book";
 
 pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
