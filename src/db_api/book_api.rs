@@ -41,31 +41,21 @@ pub fn book_by_id_response(id: u32) -> Response<String> {
 }
 
 fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
-    let maybe_conn = common::get_database_connection();
-    if maybe_conn.is_err() {
-        let error = maybe_conn.unwrap_err();
-        return Err(error);
-    } else {
-        let conn = maybe_conn.unwrap();
-        let stmt = conn.prepare("SELECT * FROM book WHERE id = :id;");
-        let mut checked_query = match stmt {
-            Ok(good_query) => good_query,
-            Err(error) => return Err(error),
-        };
-        let row = checked_query.query_row_named(&[(":id", &id)], |row| {
-            Ok(Book {
-                id: row.get(0)?,
-                title: row.get(1)?,
-                author: row.get(2)?,
-                pages: row.get(3)?,
-                genre: row.get(4)?,
-                medium: row.get(5)?,
-                rating: row.get(6)?,
-                notes: row.get(7)?,
-            })
-        })?;
-        Ok(row)
-    }
+    let conn = common::get_database_connection()?;
+    let mut stmt = conn.prepare("SELECT * FROM book WHERE id = :id;")?;
+    let row = stmt.query_row_named(&[(":id", &id)], |row| {
+	Ok(Book {
+	    id: row.get(0)?,
+	    title: row.get(1)?,
+	    author: row.get(2)?,
+	    pages: row.get(3)?,
+	    genre: row.get(4)?,
+	    medium: row.get(5)?,
+	    rating: row.get(6)?,
+	    notes: row.get(7)?,
+	})
+    })?;
+    Ok(row)
 }
 
 pub fn delete_book_response(id: u32) -> Response<String> {
@@ -95,19 +85,9 @@ pub fn delete_book_response(id: u32) -> Response<String> {
 }
 
 fn delete_book_by_id(id: u32) -> Result<usize, rusqlite::Error> {
-    let maybe_conn = common::get_database_connection();
-    if maybe_conn.is_err() {
-        let error = maybe_conn.unwrap_err();
-        return Err(error);
-    } else {
-        let conn = maybe_conn.unwrap();
-        let stmt = conn.prepare("DELETE FROM book WHERE id = :id;");
-        let mut checked_query = match stmt {
-            Ok(good_query) => good_query,
-            Err(error) => return Err(error),
-        };
-        // execute_named returns either Ok(usize) or Err(rusqlite::Error)
-        // which is exactly what I want, so it can be returned as is.
-        checked_query.execute_named(&[(":id", &id)])
-    }
+    let conn = common::get_database_connection()?;
+    let mut stmt = conn.prepare("DELETE FROM book WHERE id = :id;")?;
+    // execute_named returns either Ok(usize) or Err(rusqlite::Error)
+    // which is exactly what I want, so it can be returned as is.
+    stmt.execute_named(&[(":id", &id)])
 }
