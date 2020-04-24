@@ -1,3 +1,23 @@
+/*! 
+
+# master_route
+
+This file contains the utility functions used to compose all
+of the individual routes specified in their own sub-modules.
+
+There is a function per major HTTP verb: POST, GET, PUT, and DELETE.
+or create, read, update and delete. Each of these functions combines
+some number of smaller routes into a larger one. The
+`generate_master_route` function then combines these larger routes
+into a final route that is ready to be served in the `main` method
+of the server.
+
+These functions contain no real logic to speak of, but more serve as
+containers for organizing the different routes and combining them in
+a neat fashion.
+
+!*/
+
 use warp::Filter;
 
 use crate::routes::create;
