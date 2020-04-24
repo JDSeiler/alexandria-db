@@ -112,7 +112,8 @@ pub fn delete_book_response(id: u32) -> Response<String> {
 	    }
 	    res_builder
 		.status(StatusCode::NO_CONTENT)
-		.body(message)
+		.header("RowsChanged", message)
+		.body(String::from(""))
 		.unwrap()
 	},
         Err(error) => res_builder
