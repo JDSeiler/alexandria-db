@@ -3,12 +3,6 @@ use crate::db_api::book_api;
 
 const BOOK_ROOT: &str = "book";
 
-/*
-Notes:
-impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
-seems to be the catch-all return type for Filters. It's all over the warp
-docs and the source code.
-*/
 /** 
 
 book#all maps to the path /book/all
@@ -47,7 +41,7 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
 
 /** 
 
-book#by_title() maps to the path /book/title/:title where :title is a
+book#by_title maps to the path /book/title/:title where :title is a
 string corresponding to the title column of the book table in sqlite.
 
 Currently this route always returns 200 with no body for any get

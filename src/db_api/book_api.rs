@@ -16,6 +16,23 @@ struct Book {
     notes: String,
 }
 
+/**
+
+This function generates a response for any get requests to the
+/book/id/:id route. This response will take 1 of 3 forms:
+
+1. If the id matches a book in the database, and the program does
+   not produce any errors, the response body is the book record
+   in JSON form, with status code 200.
+
+2. If the does not match any book in the database, the response body
+   is a simple error message describing that no book was found, with
+   status code 404.
+
+3. If the program encounters any other problems, the response body
+   is the exception as a string, with status code 500.
+
+**/
 pub fn book_by_id_response(id: u32) -> Response<String> {
     let res_builder = Response::builder();
     let maybe_book = query_book_by_id(id);
@@ -40,6 +57,14 @@ pub fn book_by_id_response(id: u32) -> Response<String> {
     }
 }
 
+/** 
+
+Given, an integer id, this function attempts to fetch a book record
+from the database with that id. Sqlite should enforce that there are
+no duplicate ids in the table. However, if that was to somehow occur,
+this function would only return the first row that was found.
+
+**/
 fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
     let conn = common::get_database_connection()?;
     let mut stmt = conn.prepare("SELECT * FROM book WHERE id = :id;")?;
@@ -57,6 +82,19 @@ fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
     })?;
     Ok(row)
 }
+
+/** 
+
+This function generates a response for any delete requests to the
+/book/id/:id route. This response will be either:
+
+1. A response with HTTP status 204, indicating that either the deletion
+   was a success or there was no record by that id to begin with.
+
+2. A response with HTTP status 500 and a body with a string version
+   of the exception that caused the problem.
+
+**/
 
 pub fn delete_book_response(id: u32) -> Response<String> {
     let res_builder = Response::builder();
@@ -84,6 +122,14 @@ pub fn delete_book_response(id: u32) -> Response<String> {
     }
 }
 
+/** 
+
+Given, an integer id, this function attempts to delete the book record
+from the database with the given id. The function then returns a
+`Result` that is either the number of rows changed (on succes), or a
+rusqlite:Error (if there is a problem).
+
+**/
 fn delete_book_by_id(id: u32) -> Result<usize, rusqlite::Error> {
     let conn = common::get_database_connection()?;
     let mut stmt = conn.prepare("DELETE FROM book WHERE id = :id;")?;
