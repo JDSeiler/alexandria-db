@@ -28,6 +28,6 @@ pub fn new_book() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejec
             // I wasn't aware Warp used serde_json internally
             // to do this when I first wrote this endpoint
             let body = serde_json::to_string(&body).unwrap();
-            book::create_book_response(body)
+            book::create_book_handler(body)
 	})
 } 

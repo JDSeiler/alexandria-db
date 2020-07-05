@@ -25,7 +25,7 @@ pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
 reading#by_id maps to the path /reading/id/:id where :id is a positive
 integer corresponding to a row id in sqlite.
 
-See the documentation for reading_api::reading_by_id_response() for details
+See the documentation for reading_api::reading_by_id_handler() for details
 on what this route returns.
 
 **/
@@ -35,7 +35,7 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
         .and(warp::path::param())
 	.and(warp::get())
         .map(|id: u32| {
-	   reading::reading_by_id_response(id) 
+	   reading::reading_by_id_handler(id) 
 	})
 }
 

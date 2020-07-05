@@ -20,7 +20,7 @@ This function generates a response for any get requests to the
    is the exception as a string, with status code 500.
 
 **/
-pub fn book_by_id_response(id: u32) -> Response<String> {
+pub fn book_by_id_handler(id: u32) -> Response<String> {
     let res_builder = Response::builder();
     let maybe_book = query_book_by_id(id);
 
@@ -58,7 +58,7 @@ This function generates a response for any delete requests to the
 
 **/
 
-pub fn delete_book_response(id: u32) -> Response<String> {
+pub fn delete_book_handler(id: u32) -> Response<String> {
     let res_builder = Response::builder();
     let delete_result = delete_book_by_id(id);
 
@@ -95,7 +95,7 @@ pub fn delete_book_response(id: u32) -> Response<String> {
 //    serde_json::from_str(json_string)?
 //}
 
-pub fn create_book_response(payload: String) -> Response<String> {
+pub fn create_book_handler(payload: String) -> Response<String> {
     let res_builder = Response::builder();
     let maybe_book = serde_json::from_str(payload.as_str());
     match maybe_book {

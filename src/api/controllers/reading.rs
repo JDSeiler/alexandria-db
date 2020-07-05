@@ -3,7 +3,7 @@ use serde_json::ser;
 
 use crate::api::models::reading::*;
 
-pub fn reading_by_id_response(id: u32) -> Response<String> {
+pub fn reading_by_id_handler(id: u32) -> Response<String> {
     let res_builder = Response::builder();
     let maybe_reading = query_reading_by_id(id);
 
@@ -27,7 +27,7 @@ pub fn reading_by_id_response(id: u32) -> Response<String> {
     }
 }
 
-pub fn delete_reading_response(id: u32) -> Response<String> {
+pub fn delete_reading_handler(id: u32) -> Response<String> {
     let res_builder = Response::builder();
     let delete_result = delete_reading_by_id(id);
 

@@ -9,6 +9,6 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
         .and(warp::path::param())
         .and(warp::delete())
         .map(|id: u32| {
-	    book::delete_book_response(id)
+	    book::delete_book_handler(id)
 	})
 }
