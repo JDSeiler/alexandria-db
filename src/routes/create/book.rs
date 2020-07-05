@@ -1,5 +1,8 @@
 use warp::Filter;
+use serde_json;
 use std::collections::HashMap;
+
+use crate::db_api::book_api;
 
 const CREATE_ROOT: &str = "create";
 const BOOK_ROOT: &str = "book";
@@ -18,7 +21,13 @@ pub fn new_book() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejec
 	.and(warp::post())
 	.and(warp::body::content_length_limit(1024 * 4))
 	.and(warp::body::json())
-	.map(|body: HashMap<String, String>| {
-	    format!("Got POST body of {:#?}", body)
+	.map(|body: HashMap<String, serde_json::Value>| {
+            // Have to turn the payload back into a string
+            // because otherwise I would have to manually
+            // parse the HashMap and I don't want to do that.
+            // I wasn't aware Warp used serde_json internally
+            // to do this when I first wrote this endpoint
+            let body = serde_json::to_string(&body).unwrap();
+            book_api::create_book_response(body)
 	})
 } 

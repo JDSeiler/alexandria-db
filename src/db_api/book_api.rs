@@ -152,12 +152,45 @@ fn delete_book_by_id(id: u32) -> Result<usize, rusqlite::Error> {
 //    serde_json::from_str(json_string)?
 //}
 
+pub fn create_book_response(payload: String) -> Response<String> {
+    let res_builder = Response::builder();
+    let maybe_book = serde_json::from_str(payload.as_str());
+    match maybe_book {
+        Ok(book) => {
+            match write_book_to_db(book) {
+                Ok(rows_changed) => {
+                    res_builder
+                        .status(StatusCode::NO_CONTENT)
+                        .header("RowsChanged", rows_changed)
+                        .body(String::from(""))
+                        .unwrap()
+                }
+                Err(db_err) => {
+                    println!("{:#?}", db_err);
+                    res_builder
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(db_err.to_string())
+                        .unwrap()
+                }
+            }
+        }
+        Err(payload_err) => {
+            res_builder
+                .status(StatusCode::BAD_REQUEST)
+                .body(payload_err.to_string())
+                .unwrap()
+        }
+    }
+
+}
+
 fn write_book_to_db(book: Book) -> Result<usize, rusqlite::Error> {
     let conn = common::get_database_connection()?;
     let mut stmt = conn.prepare(
         "INSERT INTO book (title, author, pages, genre, medium, rating, notes) 
 VALUES (:title, :author, :pages, :genre, :medium, :rating, :notes)",
     )?;
+    println!("{:#?}", book);
     let params: &[(&str, &dyn rusqlite::ToSql)] = 
         &[
             (":title", &book.title),
