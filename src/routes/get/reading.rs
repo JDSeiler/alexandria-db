@@ -1,5 +1,5 @@
 use warp::Filter;
-use crate::db_api::reading_api;
+use crate::api::controllers::reading;
 
 const READINGS_ROOT: &str = "reading";
 
@@ -35,7 +35,7 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
         .and(warp::path::param())
 	.and(warp::get())
         .map(|id: u32| {
-	   reading_api::reading_by_id_response(id) 
+	   reading::reading_by_id_response(id) 
 	})
 }
 

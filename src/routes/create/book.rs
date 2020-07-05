@@ -2,7 +2,7 @@ use warp::Filter;
 use serde_json;
 use std::collections::HashMap;
 
-use crate::db_api::book_api;
+use crate::api::controllers::book;
 
 const CREATE_ROOT: &str = "create";
 const BOOK_ROOT: &str = "book";
@@ -28,6 +28,6 @@ pub fn new_book() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejec
             // I wasn't aware Warp used serde_json internally
             // to do this when I first wrote this endpoint
             let body = serde_json::to_string(&body).unwrap();
-            book_api::create_book_response(body)
+            book::create_book_response(body)
 	})
 } 

@@ -1,7 +1,5 @@
-use warp::{Filter};
-
 mod routes;
-mod db_api;
+mod api;
 
 #[tokio::main]
 async fn main() {

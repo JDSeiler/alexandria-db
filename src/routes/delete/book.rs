@@ -1,5 +1,5 @@
 use warp::Filter;
-use crate::db_api::book_api;
+use crate::api::controllers::book;
 
 const BOOK_ROOT: &str = "book";
 
@@ -9,6 +9,6 @@ pub fn by_id() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejectio
         .and(warp::path::param())
         .and(warp::delete())
         .map(|id: u32| {
-	    book_api::delete_book_response(id)
+	    book::delete_book_response(id)
 	})
 }
