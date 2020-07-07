@@ -2,6 +2,7 @@ use serde_json::ser;
 use warp::http::{Response, StatusCode};
 
 use crate::api::models::book::*;
+use std::collections::HashMap;
 
 /**
 
@@ -88,13 +89,6 @@ pub fn delete_book_handler(id: u32) -> Response<String> {
     }
 }
 
-
-// Keeping this for reference, but I will get rid of this function later once I have
-// the response handler
-//fn create_book_from_json<'a>(json_string: &'a str) -> Result<Book, serde_json::error::Error> {
-//    serde_json::from_str(json_string)?
-//}
-
 pub fn create_book_handler(payload: String) -> Response<String> {
     let res_builder = Response::builder();
     let maybe_book = serde_json::from_str(payload.as_str());
@@ -125,4 +119,14 @@ pub fn create_book_handler(payload: String) -> Response<String> {
         }
     }
 
+}
+
+pub fn update_book_handler(id: u32, payload: HashMap<String, serde_json::Value>) -> Response<String> {
+    let res_builder = Response::builder();
+    let verified = verify_update_payload(id, payload);
+
+    res_builder
+        .status(StatusCode::OK)
+        .body(String::from(format!("TESTING ONLY: {:#?}", verified)))
+        .unwrap()
 }
