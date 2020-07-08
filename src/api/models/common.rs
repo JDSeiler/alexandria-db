@@ -22,9 +22,6 @@ super well and documentation will help me internalize and remember.
 First, #[macro_export] is the attribute you have to use to make a 
 macro usable across modules.
 
-Next, this macro is "overloaded", once for non pub structs and onces for
-pub structs.
-
 Fundamentally what this does is take in some Rust code as a pattern, then
 spit out some Rust code in response. This macro takes in a struct
 definition and spits out an identical struct definition with the derive
@@ -33,21 +30,6 @@ method.
 **/
 #[macro_export]
 macro_rules! create_struct_with_impl {
-    (struct $name:ident {
-        $($field_name:ident: $field_type:ty,)*
-    }) => {
-        #[derive(Serialize, Deserialize, Debug)]
-        struct $name {
-            $($field_name: $field_type,)*
-        }
-
-        impl $name {
-            fn field_names() -> Vec<&'static str> {
-                vec![$(stringify!($field_name)), *]
-            }
-        }
-    };
-
     (pub struct $name:ident {
         $($field_name:ident: $field_type:ty,)*
     }) => {
@@ -59,6 +41,30 @@ macro_rules! create_struct_with_impl {
         impl $name {
             fn field_names() -> Vec<&'static str> {
                 vec![$(stringify!($field_name)), *]
+            }
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! create_validator {
+    ($fn_name:ident, $valid_type:pat) => {
+        fn $fn_name(real_type: &Value) -> bool {
+            match real_type {
+                $valid_type => true,
+                _ => false
+            }
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! create_nullable_validator {
+    ($fn_name:ident, $valid_type:pat) => {
+        fn $fn_name(real_type: &Value) -> bool {
+            match real_type {
+                $valid_type | &Value::Null => true,
+                _ => false
             }
         }
     }
