@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::value::Value;
 use std::collections::HashMap;
 
 use super::common;
 // Macros get exported to the root of the crate
 // Odd but this works
 use crate::create_struct_with_impl;
+use crate::create_validator;
+use crate::create_nullable_validator;
 
 create_struct_with_impl! {
     pub struct Book {
@@ -20,9 +22,17 @@ create_struct_with_impl! {
     }
 }
 
+create_validator!(is_valid_id, Value::Number(_));
+create_validator!(is_valid_title, Value::String(_));
+create_validator!(is_valid_author, Value::String(_));
+create_nullable_validator!(is_valid_pages, Value::Number(_));
+create_nullable_validator!(is_valid_genre, Value::String(_));
+create_validator!(is_valid_medium, Value::String(_));
+create_nullable_validator!(is_valid_rating, Value::Number(_));
+create_nullable_validator!(is_valid_notes, Value::String(_));
+
 /** 
 WIP Notes:
-
 This logic can validate that all the keys in a payload are good,
 and return a list of bad ones otherwise.
 
@@ -37,6 +47,9 @@ and handle all the response logic.
 pub fn verify_update_payload(id: u32, payload: HashMap<String, Value>) -> String {
     let book_fields: Vec<&'static str> = Book::field_names();
     let mut bad_keys_list = String::new();
+
+    let are_valid_values = verify_payload_types(&payload);
+    println!("{:#?}", are_valid_values);
     
     for key in payload.keys() {
         let mut key_is_valid = false;
@@ -64,6 +77,36 @@ pub fn verify_update_payload(id: u32, payload: HashMap<String, Value>) -> String
     } else {
         format!("Bad keys present: {}", bad_keys_list)
     }
+}
+
+pub fn verify_payload_types(payload: &HashMap<String, Value>) -> Vec<bool> {
+    /*
+    I've thought a long time about this and right now the only
+    Way I can think to do this is to directly check every key
+    and validate its type directly.
+    
+    TODO:
+    1. Make this method the main verification method. If I'm going
+    to check all the keys manually anyway there's no point in checking for
+    bad keys the other way when I can just use the _ pattern on the match.
+    */
+    let mut valid_vec_STUB = Vec::new();
+    for key in payload.keys() {
+        let value = payload.get(key).unwrap();
+        let is_valid_value = match &key[..] {
+            "id" => { is_valid_id(value) },
+            "title" => { is_valid_title(value) },
+            "author" => { is_valid_author(value) },
+            "pages" => { is_valid_pages(value) },
+            "genre" => { is_valid_genre(value) },
+            "medium" => { is_valid_medium(value) },
+            "rating" => { is_valid_rating(value) },
+            "notes" => { is_valid_notes(value) },
+            _ => false
+        };
+        valid_vec_STUB.push(is_valid_value);
+    }
+    valid_vec_STUB
 }
 
 
