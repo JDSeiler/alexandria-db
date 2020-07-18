@@ -121,12 +121,33 @@ pub fn create_book_handler(payload: String) -> Response<String> {
 
 }
 
-pub fn update_book_handler(id: u32, payload: HashMap<String, serde_json::Value>) -> Response<String> {
+pub fn update_book_handler(payload: String) -> Response<String> {
     let res_builder = Response::builder();
-    let verified = verify_update_payload(id, payload);
-
-    res_builder
-        .status(StatusCode::OK)
-        .body(String::from(format!("TESTING ONLY: {:#?}", verified)))
-        .unwrap()
+    let maybe_book = serde_json::from_str(payload.as_str());
+    match maybe_book {
+        Ok(book) => {
+            match update_book_in_db(book) {
+                Ok(rows_changed) => {
+                    return res_builder
+                        .status(StatusCode::NO_CONTENT)
+                        .header("RowsChanged", rows_changed)
+                        .body(String::from(""))
+                        .unwrap()
+                }
+                Err(db_err) => {
+                    println!("{:#?}", db_err);
+                    return res_builder
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(db_err.to_string())
+                        .unwrap()
+                }
+            }
+        }
+        Err(payload_err) => {
+            return res_builder
+                .status(StatusCode::BAD_REQUEST)
+                .body(payload_err.to_string())
+                .unwrap()
+        }
+    }
 }

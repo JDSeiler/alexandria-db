@@ -9,106 +9,51 @@ use crate::create_struct_with_impl;
 use crate::create_validator;
 use crate::create_nullable_validator;
 
-create_struct_with_impl! {
-    pub struct Book {
-        id: Option<u32>,
-        title: String,
-        author: String,
-        pages: Option<u32>,
-        genre: Option<String>,
-        medium: String,
-        rating: Option<u32>,
-        notes: Option<String>,
-    }
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Book {
+    id: Option<u32>,
+    title: String,
+    author: String,
+    pages: Option<u32>,
+    genre: Option<String>,
+    medium: String,
+    rating: Option<u32>,
+    notes: Option<String>,
 }
 
-create_validator!(is_valid_id, Value::Number(_));
-create_validator!(is_valid_title, Value::String(_));
-create_validator!(is_valid_author, Value::String(_));
-create_nullable_validator!(is_valid_pages, Value::Number(_));
-create_nullable_validator!(is_valid_genre, Value::String(_));
-create_validator!(is_valid_medium, Value::String(_));
-create_nullable_validator!(is_valid_rating, Value::Number(_));
-create_nullable_validator!(is_valid_notes, Value::String(_));
-
-/** 
-WIP Notes:
-This logic can validate that all the keys in a payload are good,
-and return a list of bad ones otherwise.
-
-This is essentially step 1 completed, next I need to do type checking on
-the values? Maybe I will add another impl to the macro to return a map
-of the field names to a serde_json type, so at least the hardcoded map is
-contained within the struct definition. 
-
-After type checking I need to dynamically construct a SQL query, then execute it
-and handle all the response logic.
-**/
-pub fn verify_update_payload(id: u32, payload: HashMap<String, Value>) -> String {
-    let book_fields: Vec<&'static str> = Book::field_names();
-    let mut bad_keys_list = String::new();
-
-    let are_valid_values = verify_payload_types(&payload);
-    println!("{:#?}", are_valid_values);
-    
-    for key in payload.keys() {
-        let mut key_is_valid = false;
-        
-        for valid_field in book_fields.iter() {
-            if key != valid_field {
-                continue
-            }
-            else {
-                key_is_valid = true;
-                break;
-            }
-        }
-        
-        if key_is_valid {
-            continue
-        } else {
-            let bad_key = format!("{} ", key);
-            bad_keys_list.push_str(&bad_key);
-        }
-    }
-
-    if bad_keys_list.is_empty() {
-        String::from("All keys valid")
-    } else {
-        format!("Bad keys present: {}", bad_keys_list)
-    }
-}
-
-pub fn verify_payload_types(payload: &HashMap<String, Value>) -> Vec<bool> {
+pub fn update_book_in_db(book: Book) -> Result<usize, rusqlite::Error> {
     /*
-    I've thought a long time about this and right now the only
-    Way I can think to do this is to directly check every key
-    and validate its type directly.
-    
-    TODO:
-    1. Make this method the main verification method. If I'm going
-    to check all the keys manually anyway there's no point in checking for
-    bad keys the other way when I can just use the _ pattern on the match.
-    */
-    let mut valid_vec_STUB = Vec::new();
-    for key in payload.keys() {
-        let value = payload.get(key).unwrap();
-        let is_valid_value = match &key[..] {
-            "id" => { is_valid_id(value) },
-            "title" => { is_valid_title(value) },
-            "author" => { is_valid_author(value) },
-            "pages" => { is_valid_pages(value) },
-            "genre" => { is_valid_genre(value) },
-            "medium" => { is_valid_medium(value) },
-            "rating" => { is_valid_rating(value) },
-            "notes" => { is_valid_notes(value) },
-            _ => false
-        };
-        valid_vec_STUB.push(is_valid_value);
-    }
-    valid_vec_STUB
+    I'm taking a new approach with this method, instead of taking partial payloads,
+    I'm going to take an entire book object and serialize it. The realization here
+    is that the front-end already has the entire book object because it has to be
+    fetched first. Thus it makes more sense to make partial modifications on the
+    front end and then just send the whole thing. Let SQLite figure out half of the
+    values didn't change. 
+     */
+    let conn = common::get_database_connection()?;
+    let mut stmt = conn.prepare(
+"UPDATE book SET title = :title,
+author = :author,
+pages = :pages,
+genre = :genre,
+medium = :medium,
+rating = :rating,
+notes = :notes
+WHERE id = :id; 
+")?;
+    println!("{:#?}", book);
+    let params: &[(&str, &dyn rusqlite::ToSql)] = &[
+        (":id", &book.id),
+        (":title", &book.title),
+        (":author", &book.author),
+        (":pages", &book.pages),
+        (":genre", &book.genre),
+        (":medium", &book.medium),
+        (":rating", &book.rating),
+        (":notes", &book.notes),
+    ];
+    stmt.execute_named(params)
 }
-
 
 /**
 
