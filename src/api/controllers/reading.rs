@@ -52,3 +52,34 @@ pub fn delete_reading_handler(id: u32) -> Response<String> {
             .unwrap(),
     }
 }
+
+pub fn update_reading_handler(payload: String) -> Response<String> {
+    let res_builder = Response::builder();
+    let maybe_reading = serde_json::from_str(payload.as_str());
+    match maybe_reading {
+        Ok(reading) => {
+            match update_reading_in_db(reading) {
+                Ok(rows_changed) => {
+                    res_builder
+                        .status(StatusCode::NO_CONTENT)
+                        .header("RowsChanged", rows_changed)
+                        .body(String::from(""))
+                        .unwrap()
+                }
+                Err(db_err) => {
+                    println!("{:#?}", db_err);
+                    res_builder
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(db_err.to_string())
+                        .unwrap()
+                }
+            }
+        }
+        Err(payload_err) => {
+            res_builder
+                .status(StatusCode::BAD_REQUEST)
+                .body(payload_err.to_string())
+                .unwrap()
+        }
+    }
+}
