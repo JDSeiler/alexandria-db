@@ -4,7 +4,7 @@ use super::common;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Reading {
-    id: u32,
+    id: Option<u32>,
     book: u32,
     start_date: String,
     end_date: Option<String>,
@@ -32,16 +32,33 @@ pub fn query_reading_by_id(id: u32) -> Result<Reading, rusqlite::Error> {
     Ok(row)
 }
 
+pub fn write_reading_to_db(reading: Reading) -> Result<usize, rusqlite::Error> {
+    let conn = common::get_database_connection()?;
+    let mut stmt = conn.prepare(
+        "INSERT INTO reading 
+(book, start_date, end_date, notes) VALUES 
+(:book, :start_date, :end_date, :notes);"
+    )?;
+
+    let params: &[(&str, &dyn rusqlite::ToSql)] = &[
+        (":book", &reading.book),
+        (":start_date", &reading.start_date),
+        (":end_date", &reading.end_date),
+        (":notes", &reading.notes),
+    ];
+    stmt.execute_named(params)
+}
+
 pub fn update_reading_in_db(reading: Reading) -> Result<usize, rusqlite::Error> {
     let conn = common::get_database_connection()?;
     let mut stmt = conn.prepare(
-"UPDATE reading SET 
+        "UPDATE reading SET 
 book = :book,
 start_date = :start_date,
 end_date = :end_date,
 notes = :notes
 WHERE id = :id;"
-)?;
+    )?;
 
     println!("{:#?}", reading);
     let params: &[(&str, &dyn rusqlite::ToSql)] = &[
@@ -49,7 +66,7 @@ WHERE id = :id;"
         (":book", &reading.book),
         (":start_date", &reading.start_date),
         (":end_date", &reading.end_date),
-        (":notes", &reading.notes)
+        (":notes", &reading.notes),
     ];
     stmt.execute_named(params)
 }
