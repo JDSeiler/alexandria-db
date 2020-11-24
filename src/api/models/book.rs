@@ -1,16 +1,10 @@
 use serde::{Deserialize, Serialize};
-use serde_json::value::Value;
-use std::collections::HashMap;
 
 use super::common;
-// Macros get exported to the root of the crate
-// Odd but this works
-use crate::create_struct_with_impl;
-use crate::create_validator;
-use crate::create_nullable_validator;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Book {
+    // id is optional because it is missing in book creation
     id: Option<u32>,
     title: String,
     author: String,
