@@ -2,7 +2,6 @@ use serde_json::ser;
 use warp::http::{Response, StatusCode};
 
 use crate::api::models::book::*;
-use std::collections::HashMap;
 
 /**
 
