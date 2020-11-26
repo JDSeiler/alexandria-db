@@ -32,15 +32,15 @@ pub fn delete_reading_handler(id: u32) -> Response<String> {
     let delete_result = delete_reading_by_id(id);
     println!("{:#?}", delete_result);
     match delete_result {
-        Ok(rows_changed) => {res_builder
+        Ok(rows_changed) => res_builder
             .status(StatusCode::NO_CONTENT)
             .header("RowsChanged", rows_changed)
             .body(String::from(""))
-                             .unwrap()},
-        Err(error) => {res_builder
+            .unwrap(),
+        Err(error) => res_builder
             .status(StatusCode::INTERNAL_SERVER_ERROR)
             .body(error.to_string())
-                       .unwrap()},
+            .unwrap(),
     }
 }
 

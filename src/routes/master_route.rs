@@ -24,6 +24,7 @@ use crate::routes::create;
 use crate::routes::delete;
 use crate::routes::get;
 use crate::routes::update;
+use crate::routes::search;
 
 fn generate_create_routes(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
@@ -99,16 +100,24 @@ fn generate_delete_routes(
     book_routes.or(reading_routes)
 }
 
+fn generate_search_routes(
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+
+    search::search::search_content()
+}
+
 pub fn generate_master_route(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     let create_routes = generate_create_routes();
     let read_routes = generate_get_routes();
     let update_routes = generate_update_routes();
     let delete_routes = generate_delete_routes();
+    let search_routes = generate_search_routes();
 
     /* Final route */
     create_routes
         .or(read_routes)
         .or(update_routes)
         .or(delete_routes)
+        .or(search_routes)
 }
