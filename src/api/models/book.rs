@@ -74,12 +74,42 @@ pub fn query_book_by_id(id: u32) -> Result<Book, rusqlite::Error> {
     })?;
     Ok(row)
 }
+// Might be good to add an optional limit query param?
+pub fn query_books_by_filter(
+    filter_col: String, filter_query: String) -> Result<Vec<Book>, rusqlite::Error> {
+
+    if !common::column_name_is_valid(filter_col.as_ref()) {
+        return Err(rusqlite::Error::InvalidColumnName(filter_col));
+    }
+
+    let conn = common::get_database_connection()?;
+    let partial_stmt = format!("SELECT * FROM book where {} = :filter_query;", filter_col);
+    let mut stmt = conn.prepare(partial_stmt.as_ref())?;
+    let params: &[(&str, &dyn rusqlite::ToSql)] = &[(":filter_query", &filter_query)];
+
+    let mut rows = stmt.query_named(params)?;
+    let mut books: Vec<Book> = Vec::new();
+    while let Some(row) = rows.next()? {
+        let book = Book {
+            id: row.get(0)?,
+            title: row.get(1)?,
+            author: row.get(2)?,
+            pages: row.get(3)?,
+            genre: row.get(4)?,
+            medium: row.get(5)?,
+            rating: row.get(6)?,
+            notes: row.get(7)?,
+        };
+        books.push(book);
+    };
+    Ok(books)
+}
 
 /**
 
 Given, an integer id, this function attempts to delete the book record
 from the database with the given id. The function then returns a
-`Result` that is either the number of rows changed (on succes), or a
+`Result` that is either the number of rows changed (on success), or a
 rusqlite:Error (if there is a problem).
 
 **/
@@ -188,7 +218,7 @@ mod tests {
         };
         let changes = write_book_to_db(new_book);
         match changes {
-            Ok(rows) => assert!(rows == 1),
+            Ok(rows) => assert_eq!(rows, 1),
             Err(e) => panic!("Insert failed with error: {:#?}", e),
         }
     }

@@ -32,6 +32,33 @@ pub fn query_reading_by_id(id: u32) -> Result<Reading, rusqlite::Error> {
     Ok(row)
 }
 
+pub fn query_readings_by_filter(
+    filter_col: String, filter_query: String) -> Result<Vec<Reading>, rusqlite::Error> {
+
+    if !common::column_name_is_valid(filter_col.as_ref()) {
+        return Err(rusqlite::Error::InvalidColumnName(filter_col));
+    }
+
+    let conn = common::get_database_connection()?;
+    let partial_stmt = format!("SELECT * FROM reading where {} = :filter_query;", filter_col);
+    let mut stmt = conn.prepare(partial_stmt.as_ref())?;
+    let params: &[(&str, &dyn rusqlite::ToSql)] = &[(":filter_query", &filter_query)];
+
+    let mut rows = stmt.query_named(params)?;
+    let mut readings: Vec<Reading> = Vec::new();
+    while let Some(row) = rows.next()? {
+        let reading = Reading {
+            id: row.get(0)?,
+            book: row.get(1)?,
+            start_date: row.get(2)?,
+            end_date: row.get(3)?,
+            notes: row.get(4)?,
+        };
+        readings.push(reading);
+    };
+    Ok(readings)
+}
+
 pub fn write_reading_to_db(reading: Reading) -> Result<usize, rusqlite::Error> {
     let conn = common::get_database_connection()?;
     let mut stmt = conn.prepare(

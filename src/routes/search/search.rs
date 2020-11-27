@@ -1,6 +1,8 @@
 use warp::Filter;
 use std::collections::HashMap;
 
+use crate::api::controllers::search;
+
 const SEARCH_ROOT: &str = "search";
 const BOOK_ROOT: &str = "books";
 const READING_ROOT: &str = "readings";
@@ -22,7 +24,7 @@ pub fn search_content() -> impl Filter<Extract = impl warp::Reply, Error = warp:
         .and(warp::query::query())
         .map(|params: HashMap<String, String>| {
             println!("Params are {:#?}", params);
-            format!("You made it to the book search endpoint!")
+            search::search_books_handler(params)
         });
     let readings_search_route = warp::path(SEARCH_ROOT)
         .and(warp::get())
@@ -30,7 +32,7 @@ pub fn search_content() -> impl Filter<Extract = impl warp::Reply, Error = warp:
         .and(warp::query::query())
         .map(|params: HashMap<String, String>| {
             println!("Params are {:#?}", params);
-            format!("You made it to the reading search endpoint!")
+            search::search_readings_handler(params)
         });
 
     book_search_route.or(readings_search_route)
