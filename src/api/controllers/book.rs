@@ -64,20 +64,9 @@ pub fn delete_book_handler(id: u32) -> Response<String> {
 
     match delete_result {
         Ok(changed_rows) => {
-            let message: String;
-            if changed_rows == 0 {
-                message = String::from("No book found with that id, no rows changed");
-            } else if changed_rows == 1 {
-                message = String::from("A single book has been deleted");
-            } else {
-                message = format!(
-                    "{} rows were changed!! Something may have gone wrong!",
-                    changed_rows
-                );
-            }
             res_builder
                 .status(StatusCode::NO_CONTENT)
-                .header("RowsChanged", message)
+                .header("Rows-Changed", changed_rows)
                 .body(String::from(""))
                 .unwrap()
         }
@@ -129,7 +118,7 @@ pub fn update_book_handler(payload: String) -> Response<String> {
                 Ok(rows_changed) => {
                     return res_builder
                         .status(StatusCode::NO_CONTENT)
-                        .header("RowsChanged", rows_changed)
+                        .header("Rows-Changed", rows_changed)
                         .body(String::from(""))
                         .unwrap()
                 }

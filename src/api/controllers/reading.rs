@@ -34,7 +34,7 @@ pub fn delete_reading_handler(id: u32) -> Response<String> {
     match delete_result {
         Ok(rows_changed) => res_builder
             .status(StatusCode::NO_CONTENT)
-            .header("RowsChanged", rows_changed)
+            .header("Rows-Changed", rows_changed)
             .body(String::from(""))
             .unwrap(),
         Err(error) => res_builder
@@ -79,7 +79,7 @@ pub fn update_reading_handler(payload: String) -> Response<String> {
         Ok(reading) => match update_reading_in_db(reading) {
             Ok(rows_changed) => res_builder
                 .status(StatusCode::NO_CONTENT)
-                .header("RowsChanged", rows_changed)
+                .header("Rows-Changed", rows_changed)
                 .body(String::from(""))
                 .unwrap(),
             Err(db_err) => {
